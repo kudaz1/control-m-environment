@@ -1,0 +1,195 @@
+### API Control-M - Tests Manuales
+### Usa este archivo con REST Client extension de VS Code
+### O copia los requests a Postman
+
+### Variables
+@baseUrl = http://localhost:5000
+
+###############################################
+### Test 1: Health Check
+###############################################
+GET {{baseUrl}}/health
+Content-Type: application/json
+
+###############################################
+### Test 2: Reemplazar ambiente a Q5
+###############################################
+POST {{baseUrl}}/api/replace-environment
+Content-Type: application/json
+
+{
+    "environment": "Q5",
+    "json_data": {
+        "GENER_NEXUS-DEMOGRAFICO-CARLOS": {
+            "Type": "SimpleFolder",
+            "ControlmServer": "COOPEUCH",
+            "OrderMethod": "Manual",
+            "CC1040P2": {
+                "Type": "Job:OS400:Full:CommandLine",
+                "CommandLine": "CALL PGM(RBIENVFCL)  PARM('CTINTDEM' 'NEXDEM')",
+                "SubApplication": "GENER_NEXUS-DEMOGRAFICO-CARLOS",
+                "Priority": "Very Low",
+                "FileName": "CC1040P2",
+                "Confirm": true,
+                "Host": "ibsqa",
+                "FilePath": "CC1040P2",
+                "CreatedBy": "emuser",
+                "Description": "NEXUS-DEMOGRAFICO",
+                "RunAs": "Q7ABATCH",
+                "Application": "GENER_NEXUS-DEMOGRAFICO-CARLOS",
+                "Variables": [
+                    {"tm": "%%TIME"},
+                    {"HHt": "%%SUBSTR %%tm  1 2"},
+                    {"MMt": "%%SUBSTR %%tm  3 2"},
+                    {"SSt": "%%SUBSTR %%tm  5 2"},
+                    {"HORA": "%%HHt:%%MMt:%%SSt"},
+                    {"OS400-AEV_LEN": "4000"},
+                    {"OS400-JOB_NAME": "CC1040P2"},
+                    {"OS400-MEM_NAME": "CC1040P2"},
+                    {"OS400-MEM_LIB": "CC1040P2"},
+                    {"OS400-JOBD": "*USRPRF"},
+                    {"OS400-CURLIB": "Q7AHIFILES"},
+                    {"OS400-JOB_OWNER": "Q7ABATCH"}
+                ],
+                "RerunLimit": {
+                    "Units": "Minutes",
+                    "Every": "0"
+                },
+                "When": {
+                    "WeekDays": ["MON", "TUE", "WED", "THU", "FRI"],
+                    "MonthDays": ["NONE"],
+                    "FromTime": "2000",
+                    "DaysRelation": "OR",
+                    "ConfirmationCalendars": {
+                        "Calendar": "Cal_Habil"
+                    }
+                },
+                "JobAFT": {
+                    "Type": "Resource:Pool",
+                    "Quantity": "1"
+                },
+                "eventsToWaitFor": {
+                    "Type": "WaitForEvents",
+                    "Events": [
+                        {"Event": "PRECIERRE-EODAY-NEXUS-001-IBS-DIA"}
+                    ]
+                }
+            }
+        }
+    }
+}
+
+###############################################
+### Test 3: Reemplazar ambiente a Q7
+###############################################
+POST {{baseUrl}}/api/replace-environment
+Content-Type: application/json
+
+{
+    "environment": "Q7",
+    "json_data": {
+        "GENER_NEXUS-DEMOGRAFICO-CARLOS": {
+            "CC1040P2": {
+                "RunAs": "Q5ABATCH",
+                "Variables": [
+                    {"OS400-CURLIB": "Q5AHIFILES"},
+                    {"OS400-JOB_OWNER": "Q5ABATCH"}
+                ]
+            }
+        }
+    }
+}
+
+###############################################
+### Test 4: Reemplazar ambiente a Q8
+###############################################
+POST {{baseUrl}}/api/replace-environment
+Content-Type: application/json
+
+{
+    "environment": "Q8",
+    "json_data": {
+        "GENER_NEXUS-DEMOGRAFICO-CARLOS": {
+            "CC1040P2": {
+                "RunAs": "Q7ABATCH",
+                "Variables": [
+                    {"OS400-CURLIB": "Q7AHIFILES"},
+                    {"OS400-JOB_OWNER": "Q7ABATCH"}
+                ]
+            }
+        }
+    }
+}
+
+###############################################
+### Test 5: Endpoint para Jira - Formato Simple
+###############################################
+POST {{baseUrl}}/api/replace-environment-from-jira
+Content-Type: application/json
+
+{
+    "environment": "Q5",
+    "json_data": {
+        "GENER_NEXUS-DEMOGRAFICO-CARLOS": {
+            "CC1040P2": {
+                "RunAs": "Q7ABATCH",
+                "Variables": [
+                    {"OS400-CURLIB": "Q7AHIFILES"},
+                    {"OS400-JOB_OWNER": "Q7ABATCH"}
+                ]
+            }
+        }
+    }
+}
+
+###############################################
+### Test 6: Endpoint para Jira - Formato Jira Issue
+###############################################
+POST {{baseUrl}}/api/replace-environment-from-jira
+Content-Type: application/json
+
+{
+    "issue": {
+        "fields": {
+            "customfield_10001": "Q5"
+        }
+    },
+    "json_data": {
+        "GENER_NEXUS-DEMOGRAFICO-CARLOS": {
+            "CC1040P2": {
+                "RunAs": "Q8ABATCH",
+                "Variables": [
+                    {"OS400-CURLIB": "Q8AHIFILES"},
+                    {"OS400-JOB_OWNER": "Q8ABATCH"}
+                ]
+            }
+        }
+    }
+}
+
+###############################################
+### Test 7: Error - Ambiente inválido
+###############################################
+POST {{baseUrl}}/api/replace-environment
+Content-Type: application/json
+
+{
+    "environment": "PROD",
+    "json_data": {
+        "test": "data"
+    }
+}
+
+###############################################
+### Test 8: Error - Falta campo environment
+###############################################
+POST {{baseUrl}}/api/replace-environment
+Content-Type: application/json
+
+{
+    "json_data": {
+        "test": "data"
+    }
+}
+
+

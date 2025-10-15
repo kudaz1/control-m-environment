@@ -1,0 +1,282 @@
+{
+	"info": {
+		"_postman_id": "control-m-api-collection",
+		"name": "Control-M API - Reemplazo de Ambientes",
+		"description": "Colección para probar la API de Control-M que reemplaza ambientes (Q5, Q7, Q8)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"health"
+					]
+				},
+				"description": "Verifica que la API está funcionando correctamente"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Reemplazar Ambiente a Q5",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"environment\": \"Q5\",\n    \"json_data\": {\n        \"GENER_NEXUS-DEMOGRAFICO-CARLOS\": {\n            \"Type\": \"SimpleFolder\",\n            \"ControlmServer\": \"COOPEUCH\",\n            \"OrderMethod\": \"Manual\",\n            \"CC1040P2\": {\n                \"Type\": \"Job:OS400:Full:CommandLine\",\n                \"CommandLine\": \"CALL PGM(RBIENVFCL)  PARM('CTINTDEM' 'NEXDEM')\",\n                \"SubApplication\": \"GENER_NEXUS-DEMOGRAFICO-CARLOS\",\n                \"Priority\": \"Very Low\",\n                \"FileName\": \"CC1040P2\",\n                \"Confirm\": true,\n                \"Host\": \"ibsqa\",\n                \"FilePath\": \"CC1040P2\",\n                \"CreatedBy\": \"emuser\",\n                \"Description\": \"NEXUS-DEMOGRAFICO\",\n                \"RunAs\": \"Q7ABATCH\",\n                \"Application\": \"GENER_NEXUS-DEMOGRAFICO-CARLOS\",\n                \"Variables\": [\n                    {\"tm\": \"%%TIME\"},\n                    {\"HHt\": \"%%SUBSTR %%tm  1 2\"},\n                    {\"MMt\": \"%%SUBSTR %%tm  3 2\"},\n                    {\"SSt\": \"%%SUBSTR %%tm  5 2\"},\n                    {\"HORA\": \"%%HHt:%%MMt:%%SSt\"},\n                    {\"OS400-AEV_LEN\": \"4000\"},\n                    {\"OS400-JOB_NAME\": \"CC1040P2\"},\n                    {\"OS400-MEM_NAME\": \"CC1040P2\"},\n                    {\"OS400-MEM_LIB\": \"CC1040P2\"},\n                    {\"OS400-JOBD\": \"*USRPRF\"},\n                    {\"OS400-CURLIB\": \"Q7AHIFILES\"},\n                    {\"OS400-JOB_OWNER\": \"Q7ABATCH\"}\n                ],\n                \"RerunLimit\": {\n                    \"Units\": \"Minutes\",\n                    \"Every\": \"0\"\n                },\n                \"When\": {\n                    \"WeekDays\": [\"MON\", \"TUE\", \"WED\", \"THU\", \"FRI\"],\n                    \"MonthDays\": [\"NONE\"],\n                    \"FromTime\": \"2000\",\n                    \"DaysRelation\": \"OR\",\n                    \"ConfirmationCalendars\": {\n                        \"Calendar\": \"Cal_Habil\"\n                    }\n                },\n                \"JobAFT\": {\n                    \"Type\": \"Resource:Pool\",\n                    \"Quantity\": \"1\"\n                },\n                \"eventsToWaitFor\": {\n                    \"Type\": \"WaitForEvents\",\n                    \"Events\": [\n                        {\"Event\": \"PRECIERRE-EODAY-NEXUS-001-IBS-DIA\"}\n                    ]\n                }\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/replace-environment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"replace-environment"
+					]
+				},
+				"description": "Reemplaza todas las referencias Q7A y Q8A por Q5A en el JSON"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Reemplazar Ambiente a Q7",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"environment\": \"Q7\",\n    \"json_data\": {\n        \"GENER_NEXUS-DEMOGRAFICO-CARLOS\": {\n            \"CC1040P2\": {\n                \"RunAs\": \"Q5ABATCH\",\n                \"Variables\": [\n                    {\"OS400-CURLIB\": \"Q5AHIFILES\"},\n                    {\"OS400-JOB_OWNER\": \"Q5ABATCH\"}\n                ]\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/replace-environment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"replace-environment"
+					]
+				},
+				"description": "Reemplaza todas las referencias Q5A y Q8A por Q7A en el JSON"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Reemplazar Ambiente a Q8",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"environment\": \"Q8\",\n    \"json_data\": {\n        \"GENER_NEXUS-DEMOGRAFICO-CARLOS\": {\n            \"CC1040P2\": {\n                \"RunAs\": \"Q7ABATCH\",\n                \"Variables\": [\n                    {\"OS400-CURLIB\": \"Q7AHIFILES\"},\n                    {\"OS400-JOB_OWNER\": \"Q7ABATCH\"}\n                ]\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/replace-environment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"replace-environment"
+					]
+				},
+				"description": "Reemplaza todas las referencias Q5A y Q7A por Q8A en el JSON"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Endpoint Jira - Formato Simple",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"environment\": \"Q5\",\n    \"json_data\": {\n        \"GENER_NEXUS-DEMOGRAFICO-CARLOS\": {\n            \"CC1040P2\": {\n                \"RunAs\": \"Q7ABATCH\",\n                \"Variables\": [\n                    {\"OS400-CURLIB\": \"Q7AHIFILES\"},\n                    {\"OS400-JOB_OWNER\": \"Q7ABATCH\"}\n                ]\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/replace-environment-from-jira",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"replace-environment-from-jira"
+					]
+				},
+				"description": "Endpoint optimizado para Jira con formato simple"
+			},
+			"response": []
+		},
+		{
+			"name": "6. Endpoint Jira - Formato Issue",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"issue\": {\n        \"fields\": {\n            \"customfield_10001\": \"Q5\"\n        }\n    },\n    \"json_data\": {\n        \"GENER_NEXUS-DEMOGRAFICO-CARLOS\": {\n            \"CC1040P2\": {\n                \"RunAs\": \"Q8ABATCH\",\n                \"Variables\": [\n                    {\"OS400-CURLIB\": \"Q8AHIFILES\"},\n                    {\"OS400-JOB_OWNER\": \"Q8ABATCH\"}\n                ]\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/replace-environment-from-jira",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"replace-environment-from-jira"
+					]
+				},
+				"description": "Endpoint con estructura de issue de Jira"
+			},
+			"response": []
+		},
+		{
+			"name": "7. Test Error - Ambiente Inválido",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"environment\": \"PROD\",\n    \"json_data\": {\n        \"test\": \"data\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/replace-environment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"replace-environment"
+					]
+				},
+				"description": "Prueba manejo de errores con ambiente inválido"
+			},
+			"response": []
+		},
+		{
+			"name": "8. Test Error - Sin Environment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"json_data\": {\n        \"test\": \"data\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/replace-environment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"replace-environment"
+					]
+				},
+				"description": "Prueba manejo de errores sin campo environment"
+			},
+			"response": []
+		}
+	]
+}
