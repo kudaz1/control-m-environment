@@ -168,7 +168,7 @@ def test_replace_environment(environment):
         result = response.json()
         
         if result.get('success'):
-            print(f"✓ Éxito: Ambiente cambiado a {result.get('environment')}")
+            print(f"[OK] Exito: Ambiente cambiado a {result.get('environment')}")
             
             # Verificar algunos campos clave
             modified = result.get('modified_json', {})
@@ -185,7 +185,7 @@ def test_replace_environment(environment):
                 if 'OS400-JOB_OWNER' in var:
                     print(f"  - OS400-JOB_OWNER: {var['OS400-JOB_OWNER']}")
         else:
-            print(f"✗ Error: {result.get('error')}")
+            print(f"[X] Error: {result.get('error')}")
             
     except Exception as e:
         print(f"Error: {e}")
@@ -215,9 +215,9 @@ def test_jira_format(environment):
         result = response.json()
         
         if result.get('success'):
-            print(f"✓ {result.get('message')}")
+            print(f"[OK] {result.get('message')}")
         else:
-            print(f"✗ Error: {result.get('error')}")
+            print(f"[X] Error: {result.get('error')}")
             
     except Exception as e:
         print(f"Error: {e}")

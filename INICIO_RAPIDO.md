@@ -8,6 +8,24 @@ Crear una API que reciba el ambiente (Q5, Q7, Q8) desde Jira y modifique automá
 
 ## 🚀 Pasos Rápidos
 
+### 0. (Opcional) Crear entorno virtual
+
+**Windows (PowerShell):**
+```bash
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+**Linux/Mac:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Si usas el entorno virtual, actívalo antes de los siguientes pasos. Si no, usa `pip install -r requirements.txt` directamente.
+
 ### 1. Instalar dependencias (1 minuto)
 
 **Windows:**

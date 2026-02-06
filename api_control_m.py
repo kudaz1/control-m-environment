@@ -101,11 +101,11 @@ def replace_environment_endpoint():
         environment = data['environment']
         json_data = data['json_data']
         
-        # Validar que el ambiente sea válido
-        valid_environments = ['Q5', 'Q7', 'Q8', 'Q5A', 'Q7A', 'Q8A']
+        # Validar que el ambiente sea válido (solo Q5, Q7, Q8)
+        valid_environments = ['Q5', 'Q7', 'Q8']
         if environment.upper() not in valid_environments:
             return jsonify({
-                'error': f'Ambiente inválido. Debe ser uno de: {", ".join(valid_environments)}'
+                'error': 'Ambiente inválido. Debe ser uno de: Q5, Q7, Q8'
             }), 400
         
         logger.info(f"Procesando request para ambiente: {environment}")
@@ -177,6 +177,13 @@ def replace_environment_from_jira():
         
         if not environment:
             return jsonify({'error': 'No se pudo extraer el ambiente del request'}), 400
+        
+        # Validar que el ambiente sea uno de los permitidos (solo Q5, Q7, Q8)
+        valid_environments = ['Q5', 'Q7', 'Q8']
+        if environment.upper() not in valid_environments:
+            return jsonify({
+                'error': 'Ambiente inválido. Debe ser uno de: Q5, Q7, Q8'
+            }), 400
         
         # Obtener el JSON a modificar
         json_data = data.get('json_data')

@@ -6,10 +6,16 @@ echo Iniciando API Control-M
 echo ====================================
 echo.
 
+REM Usar entorno virtual si existe
+if exist ".venv\Scripts\activate.bat" (
+    echo Activando entorno virtual .venv...
+    call .venv\Scripts\activate.bat
+)
+
 REM Verificar si Python está instalado
 python --version >nul 2>&1
 if errorlevel 1 (
-    echo ERROR: Python no está instalado o no está en el PATH
+    echo ERROR: Python no esta instalado o no esta en el PATH
     echo Por favor instala Python 3.8 o superior
     pause
     exit /b 1
@@ -30,7 +36,7 @@ if errorlevel 1 (
 
 echo.
 echo ====================================
-echo API Control-M iniciándose en:
+echo API Control-M iniciandose en:
 echo http://localhost:5000
 echo ====================================
 echo.
