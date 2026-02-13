@@ -67,6 +67,59 @@ def health_check():
     }), 200
 
 
+def _fix_json_escapes(s):
+    """
+    Corrige escapes invalidos en una cadena que se va a parsear como JSON.
+    Validos: \\ \" \\/ \\n \\r \\t \\uXXXX. Tambien \\b y \\f se doblan para que
+    rutas Windows como E:\\ruta\\bat no fallen (\\b en JSON es backspace).
+    Cualquier otra \\ (ej. E:\\NUEVO, \\dynamowebs) se convierte en \\\\.
+    """
+    result = []
+    i = 0
+    while i < len(s):
+        if s[i] == '\\':
+            if i + 1 >= len(s):
+                result.append('\\\\')
+                i += 1
+                continue
+            next_c = s[i + 1]
+            if next_c in '"\\/nrt':
+                result.append(s[i])
+                result.append(s[i + 1])
+                i += 2
+                continue
+            if next_c == 'u' and i + 5 <= len(s):
+                hex_part = s[i + 2:i + 6]
+                if len(hex_part) == 4 and all(c in '0123456789abcdefABCDEF' for c in hex_part):
+                    result.append(s[i:i + 6])
+                    i += 6
+                    continue
+            # Escape invalido o \\b/\\f en rutas -> doblar la barra
+            result.append('\\\\')
+            result.append(next_c)
+            i += 2
+            continue
+        result.append(s[i])
+        i += 1
+    return ''.join(result)
+
+
+def _get_request_json():
+    """Obtiene y parsea el JSON del body. Corrige escapes invalidos (rutas Windows, etc.)."""
+    try:
+        body = request.get_data(as_text=True)
+        if not body or not body.strip():
+            return None, (jsonify({'error': 'No se recibieron datos (body vacio)'}), 400)
+        body_fixed = _fix_json_escapes(body)
+        data = json.loads(body_fixed)
+        return data, None
+    except json.JSONDecodeError as e:
+        logger.error(f"Error parseando JSON: {e}")
+        return None, (jsonify({
+            'error': f'JSON invalido en el body: {str(e)}. Tras corregir escapes, el body aun no es JSON valido.'
+        }), 400)
+
+
 @app.route('/api/replace-environment', methods=['POST'])
 def replace_environment_endpoint():
     """
@@ -79,8 +132,10 @@ def replace_environment_endpoint():
     }
     """
     try:
-        # Obtener datos del request
-        data = request.get_json()
+        # Obtener datos del request (manejo explicito de JSON invalido)
+        data, err = _get_request_json()
+        if err is not None:
+            return err[0], err[1]
         
         if not data:
             return jsonify({
@@ -154,7 +209,9 @@ def replace_environment_from_jira():
     }
     """
     try:
-        data = request.get_json()
+        data, err = _get_request_json()
+        if err is not None:
+            return err[0], err[1]
         
         if not data:
             return jsonify({'error': 'No se recibieron datos'}), 400
